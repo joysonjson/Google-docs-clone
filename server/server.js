@@ -6,5 +6,14 @@ const io = require("socket.io")(3002, {
 });
 
 io.on("connection", (socket) => {
-  console.log("Connection to socket");
+  socket.on("get-document", (documentId) => {
+    const data = "initial data";
+    socket.join(documentId);
+    socket.emit("load-documen", data);
+
+    socket.on("send-changes", (delta) => {
+      console.log("Changes in the document ", delta);
+      socket.broadcast.to(documentId).emit("receive-changes", delta);
+    });
+  });
 });
