@@ -16,13 +16,14 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
+const SAVE_INTERVAL = 1000;
 const TextEditor = () => {
   const [value, setValue] = useState("");
   const [socket, setSocket] = useState();
   const quill = useRef();
   const { id: documentId } = useParams();
   useEffect(() => {
-    const s = io("http://localhost:3002");
+    const s = io("http://localhost:3001");
     setSocket(s);
     return () => {
       s.disconnect();
@@ -31,13 +32,26 @@ const TextEditor = () => {
   useEffect(() => {
     if (socket === null || socket === undefined) return;
     socket.once("load-document", (document) => {
+      console.log("Loading the document", document);
       quill.current.getEditor().setContents(document);
     });
-
+    console.log("Id of the doc ", documentId);
+    if (documentId === undefined || documentId === null) return;
     socket.emit("get-document", documentId);
 
     return () => {};
   }, [socket, documentId]);
+  useEffect(() => {
+    if (socket === null || socket === undefined) return;
+
+    const interval = setInterval(() => {
+      console.log("Saving the document");
+      socket.emit("save-document", quill.current.getEditor().getContents());
+    }, SAVE_INTERVAL);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (socket === null || socket === undefined) return;
@@ -51,6 +65,8 @@ const TextEditor = () => {
       socket.off("receive-changes", handler);
     };
   }, [socket]);
+
+  const saveDocument = () => {};
   return (
     <ReactQuill
       ref={quill}

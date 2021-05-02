@@ -8,23 +8,19 @@ import {
   Link,
   Redirect,
 } from "react-router-dom";
+import { v4 as uuidV4 } from "uuid";
+
 function App() {
   return (
     <Router>
       <Switch>
         <Route path="/" exact>
-          <Redirect
-            to={`/documents/${Math.random().toString(36).substring(7)}`}
-          />
+          <Redirect to={`/documents/${uuidV4()}`} />
         </Route>
-
-        <Route path="/documents/:id" exact>
+        <Route path="/documents/:id">
           <TextEditor />
         </Route>
       </Switch>
-      <div className="App">
-        <TextEditor />
-      </div>
     </Router>
   );
 }
