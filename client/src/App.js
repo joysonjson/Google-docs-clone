@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import TextEditor from "./component/TextEditor";
+import TextEditor from "./component/page/createDoc";
 import {
   BrowserRouter as Router,
   Switch,
